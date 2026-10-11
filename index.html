@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="apple-touch-icon" href="https://augustineiacopelli.github.io/appaday/icons/157.png">
+<meta name="apple-mobile-web-app-title" content="Novena">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>Novena Companion</title>
+<style>
+:root{
+  --bg:#0b1430;--bg2:#121d42;--card:#16234d;--card2:#1c2b5c;--line:#2b3c73;
+  --accent:#6A4C93;--accent-hi:#8466b0;--lav:#c9b8ec;
+  --gold:#e8b54a;--gold-soft:#f3d48c;--ember:#c9652e;
+  --text:#eef0fa;--muted:#aeb6d6;--miss:#d98a7a;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{min-height:100dvh;display:flex;flex-direction:column;
+  background:radial-gradient(120% 60% at 50% 0%,#1d2a5e 0%,var(--bg) 60%) fixed,var(--bg);
+  color:var(--text);font-family:var(--sans);font-size:1.0625rem;line-height:1.55;
+  -webkit-text-size-adjust:100%;overflow-x:hidden}
+a{color:var(--lav)}
+button{font:inherit;color:inherit}
+.topbar{display:flex;align-items:center;gap:.75rem;padding:calc(.6rem + env(safe-area-inset-top)) 1rem .6rem;
+  background:rgba(8,14,34,.85);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.badge{background:var(--accent);color:#fff;font-weight:700;font-size:.85rem;padding:.25rem .55rem;border-radius:.5rem;letter-spacing:.04em}
+.topbar h1{font-family:var(--serif);font-weight:normal;font-size:1.15rem;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.home{display:inline-flex;align-items:center;min-height:44px;padding:0 .5rem;font-size:.9rem;text-decoration:none}
+main{flex:1;width:100%;max-width:40rem;margin:0 auto;padding:1.25rem 1rem 2rem}
+.view[hidden]{display:none}
+.lede{font-family:var(--serif);font-size:1.35rem;margin:.25rem 0 .35rem;color:var(--gold-soft)}
+.sub{color:var(--muted);margin:0 0 1.25rem}
+.list{display:grid;gap:.65rem}
+.pick{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:.9rem;
+  padding:.9rem 1rem;min-height:44px;cursor:pointer;transition:border-color .15s,background .15s}
+.pick:hover{border-color:var(--accent-hi)}
+.pick[aria-pressed="true"]{border-color:var(--gold);background:var(--card2);box-shadow:0 0 0 1px var(--gold) inset}
+.pick b{display:block;font-family:var(--serif);font-weight:normal;font-size:1.1rem}
+.pick span{display:block;color:var(--muted);font-size:.92rem;margin-top:.15rem}
+.pick.custom{border-style:dashed}
+.startbox{margin-top:1rem;background:var(--card);border:1px solid var(--line);border-radius:.9rem;padding:1rem}
+.startbox[hidden]{display:none}
+label{display:block;font-size:.92rem;color:var(--muted);margin-bottom:.35rem}
+textarea{width:100%;min-height:5.5rem;resize:vertical;background:var(--bg2);color:var(--text);border:1px solid var(--line);
+  border-radius:.6rem;padding:.65rem .75rem;font:inherit;font-family:var(--serif)}
+textarea:focus,button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.count{text-align:right;font-size:.8rem;color:var(--muted);margin-top:.25rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:.6rem 1.2rem;border-radius:.75rem;
+  border:0;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;width:100%;margin-top:.75rem}
+.btn:hover{background:var(--accent-hi)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn.gold{background:var(--gold);color:#1a1405}
+.btn.gold:hover{background:var(--gold-soft)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.dhead{display:flex;align-items:flex-start;gap:.85rem;margin-bottom:.6rem}
+.flame{flex:0 0 auto;width:38px;height:54px}
+.dhead h2{font-family:var(--serif);font-weight:normal;font-size:1.4rem;margin:0;color:var(--gold-soft);line-height:1.25}
+.intent{font-family:var(--serif);font-style:italic;color:var(--lav);margin:.2rem 0 0;font-size:1rem;word-wrap:break-word;overflow-wrap:anywhere}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin:1rem 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:.75rem;padding:.55rem .4rem;text-align:center}
+.stat b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums;color:var(--gold)}
+.stat span{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.dots{display:flex;justify-content:space-between;margin:.4rem 0 1.1rem;gap:0}
+.dot{width:44px;height:44px;min-width:0;flex:0 1 44px;display:flex;align-items:center;justify-content:center;
+  background:none;border:0;padding:0;cursor:pointer;position:relative}
+.dot i{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-style:normal;
+  font-size:.82rem;font-weight:700;font-variant-numeric:tabular-nums;border:2px solid var(--line);color:var(--muted);background:var(--bg2);
+  transition:transform .15s,background .15s}
+.dot.checked i{background:var(--gold);border-color:var(--gold);color:#1a1405}
+.dot.today i{border-color:var(--gold-soft);color:var(--text);box-shadow:0 0 0 3px rgba(232,181,74,.25)}
+.dot.today.checked i{box-shadow:0 0 0 3px rgba(232,181,74,.45)}
+.dot.missed i{border-style:dashed;border-color:var(--miss);color:var(--miss);background:transparent}
+.dot.future{cursor:not-allowed}
+.dot.future i{opacity:.4}
+.dot.viewing::after{content:"";position:absolute;bottom:0;left:50%;width:14px;height:3px;margin-left:-7px;border-radius:2px;background:var(--lav)}
+.dot:not(.future):hover i{transform:scale(1.08)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:1.1rem 1.1rem 1.2rem}
+.theme{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:0 0 .25rem}
+.card h3{font-family:var(--serif);font-weight:normal;font-size:1.3rem;margin:0 0 .6rem}
+.med{font-family:var(--serif);font-size:1.08rem;line-height:1.7;margin:0}
+.past-note{font-size:.88rem;color:var(--miss);margin:0 0 .6rem}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;min-height:48px;display:flex;align-items:center;justify-content:space-between;font-weight:600}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--gold);font-size:1.3rem;font-weight:400}
+details[open] summary::after{content:"\2212"}
+details p{font-family:var(--serif);margin:0 0 .9rem;color:var(--text)}
+.prayers{margin:1rem 0}
+.closing h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin:0 0 .35rem;font-weight:600}
+.closing p{font-family:var(--serif);margin:0;line-height:1.7}
+.checkbtn[aria-pressed="true"]{background:var(--gold);color:#1a1405}
+.complete{text-align:center;padding-top:1rem}
+.complete .flame{width:70px;height:100px;margin:0 auto .5rem;display:block}
+.complete h2{font-family:var(--serif);font-weight:normal;font-size:1.6rem;color:var(--gold-soft);margin:.2rem 0}
+.complete p{color:var(--muted)}
+.tally{font-family:var(--serif);font-size:1.1rem;color:var(--text)}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:1rem 1rem calc(1rem + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+footer a,footer button.link{display:inline-flex;align-items:center;min-height:44px;padding:0 .5rem}
+button.link{background:none;border:0;color:var(--lav);text-decoration:underline;cursor:pointer;font-size:.85rem}
+.modal{position:fixed;inset:0;background:rgba(4,8,20,.72);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:20}
+.modal[hidden]{display:none}
+.modal .box{background:var(--card2);border:1px solid var(--line);border-radius:1rem;padding:1.2rem;width:100%;max-width:22rem;max-height:90dvh;overflow-y:auto}
+.gear{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:none;border:0;cursor:pointer;color:var(--lav);border-radius:.6rem}
+.gear:hover{background:rgba(255,255,255,.06)}
+.gear svg{width:22px;height:22px}
+.pick .when{color:var(--gold-soft);font-size:.82rem;margin-top:.35rem}
+.trad{font-size:.88rem;color:var(--muted);margin:0 0 .6rem}
+.trad b{color:var(--gold-soft);font-weight:600}
+.box h2{font-family:var(--serif);font-weight:normal;font-size:1.3rem;margin:0 0 .75rem;color:var(--gold-soft)}
+.box .note{font-size:.85rem;color:var(--muted);margin:.5rem 0 0;font-family:var(--sans)}
+input[type=time]{width:100%;min-height:48px;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:.6rem;padding:.4rem .75rem;font:inherit;color-scheme:dark}
+a.btn{text-decoration:none}
+.modal p{margin:0 0 .5rem;font-family:var(--serif);font-size:1.08rem}
+.row{display:flex;gap:.6rem}
+.row .btn{flex:1}
+.flicker{transform-origin:50% 100%;animation:flick 2.6s ease-in-out infinite}
+@keyframes flick{0%,100%{transform:scale(1,1)}30%{transform:scale(.94,1.05)}60%{transform:scale(1.04,.96)}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:400px){.topbar{gap:.5rem;padding-left:.75rem;padding-right:.5rem}.topbar h1{font-size:1rem}.home{padding:0 .25rem;font-size:.85rem}}
+@media (min-width:700px){main{padding-top:2rem}.list{grid-template-columns:1fr 1fr}.pick.custom{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <span class="badge">157</span>
+  <h1>Novena Companion</h1>
+  <a class="home" href="https://augustineiacopelli.github.io/appaday/">AppADay</a>
+  <button type="button" class="gear" id="gear" aria-label="Reminders and settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</header>
+
+<main>
+  <section id="view-picker" class="view" hidden></section>
+  <section id="view-day" class="view" hidden></section>
+  <section id="view-complete" class="view" hidden></section>
+</main>
+
+<footer>
+  <a href="https://augustineiacopelli.github.io/appaday/">AppADay portfolio</a>
+  <span aria-hidden="true">&middot;</span>
+  <button type="button" class="link" id="reset-link">Reset all data</button>
+</footer>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-msg" hidden>
+  <div class="box">
+    <p id="modal-msg"></p>
+    <div class="row">
+      <button type="button" class="btn ghost" id="modal-cancel">Cancel</button>
+      <button type="button" class="btn" id="modal-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="settings" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+  <div class="box">
+    <h2 id="settings-title">Prayer reminders</h2>
+    <div id="settings-body"></div>
+    <button type="button" class="btn ghost" id="settings-close">Close</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var STORE_KEY = "appaday157_novena";
+var MAX_INTENT = 140;
+
+var PRAYERS = {
+  ourFather: { title: "Our Father", text: "Our Father, who art in heaven, hallowed be thy name; thy kingdom come, thy will be done on earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as we forgive those who trespass against us; and lead us not into temptation, but deliver us from evil. Amen." },
+  hailMary: { title: "Hail Mary", text: "Hail Mary, full of grace, the Lord is with thee. Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen." },
+  gloryBe: { title: "Glory Be", text: "Glory be to the Father, and to the Son, and to the Holy Spirit, as it was in the beginning, is now, and ever shall be, world without end. Amen." }
+};
+
+function D(theme, med){ return { theme: theme, med: med }; }
+
+var NOVENAS = {
+  "holy-spirit": {
+    name: "Novena to the Holy Spirit",
+    desc: "Nine days asking for the seven gifts, the oldest novena of the Church.",
+    days: [
+      D("Come, Holy Spirit", "The apostles waited in the upper room with Mary, praying and unsure of what would come. I wait with them today, emptying my hands so they can be filled. Come, Holy Spirit, and make a home in me."),
+      D("Wisdom", "Wisdom sees the world as God sees it, ordered toward love. So much of my worry comes from looking at things too closely and too selfishly. Holy Spirit, grant me wisdom to see my life from heaven's point of view."),
+      D("Understanding", "Understanding lets the truths of faith become light rather than mere words. I have heard the Gospel many times, yet parts of it remain closed to me. Holy Spirit, open my mind so that what I believe I may also grasp."),
+      D("Counsel", "Counsel is the quiet voice that shows the right path when the way divides. I make many choices each day without asking You at all. Holy Spirit, guide my decisions and teach me to listen before I act."),
+      D("Fortitude", "Fortitude is the strength to do good when it costs something. The martyrs had it, and so do the tired parents and caregivers who keep going. Holy Spirit, give me courage to stay faithful when it is hard."),
+      D("Knowledge", "Knowledge helps me see created things for what they are, gifts that point beyond themselves. I am tempted to rest my hope in what passes away. Holy Spirit, teach me to use the good things of this world rightly."),
+      D("Piety", "Piety is the heart of a child who loves the Father and trusts Him. Prayer is not a duty to finish but a conversation with One who delights in me. Holy Spirit, warm my heart so that I pray as a beloved son or daughter."),
+      D("Fear of the Lord", "Holy fear is not terror but awe, the reverence of one who knows how great God is. It keeps me from treating sin lightly and grace casually. Holy Spirit, fill me with wonder before the majesty of God."),
+      D("The Fruits of the Spirit", "Where the Spirit lives, love, joy, peace, patience, kindness, and gentleness begin to grow. These are the signs that the gifts have taken root. Holy Spirit, let Your fruit ripen in me so that others may taste Your goodness.")
+    ],
+    closing: "Holy Spirit, Lord and giver of life, I place this novena and my intention in Your hands. Pour out Your seven gifts on me and on all who seek You, renew the face of the earth, and lead me always to the Father through Jesus Christ our Lord. Amen."
+  },
+  "divine-mercy": {
+    name: "Divine Mercy Novena",
+    desc: "Nine days bringing a different group of souls to the ocean of mercy.",
+    days: [
+      D("All of Humanity", "Today I bring the whole human family before the merciful Heart of Jesus. No one is outside the reach of His love, not even those who have forgotten Him. Jesus, I trust in You; have mercy on us and on the whole world."),
+      D("Priests and Religious", "I pray for those who have given their lives to serve the Church. They carry heavy burdens and need grace as much as anyone. Merciful Jesus, strengthen Your priests and religious and keep them close to Your Heart."),
+      D("The Faithful", "I remember all who try, imperfectly but sincerely, to follow Christ. Their prayers and small sacrifices hold up the world in hidden ways. Jesus, console Your faithful and keep them steady in grace."),
+      D("Those Who Do Not Know Him", "Many have never truly heard of the love of God, or have heard only a distorted version. Mercy goes out to meet them where they are. Jesus, shine Your light on those who do not yet know You."),
+      D("Those Separated from the Church", "I pray for Christians who have drifted away or live in division. Christ prayed that all might be one. Merciful Lord, draw all who bear Your name back into unity."),
+      D("The Meek and Humble, and Children", "The little and the lowly are especially dear to the Heart of Jesus. Their simplicity makes room for grace. Jesus, make me childlike, and protect every child in Your care."),
+      D("Those Who Honor His Mercy", "Some spend their lives proclaiming and practicing mercy toward others. They reflect the face of Christ to a hurting world. Jesus, reward their love and make me one of them."),
+      D("The Souls in Purgatory", "I remember those who have died and are being made ready for heaven. My prayers can still reach them and hasten their joy. Merciful Jesus, grant them rest and bring them home to You."),
+      D("The Lukewarm", "Lukewarm hearts are not cold, but they are not on fire either, and sometimes that heart is mine. Mercy can rekindle even a faint ember. Jesus, set every lukewarm soul ablaze with love for You.")
+    ],
+    closing: "Eternal Father, look with mercy on all those I have carried in prayer these nine days. For the sake of the sorrowful Passion of Your Son, have mercy on us and on the whole world. Jesus, I trust in You. Amen."
+  },
+  "st-jude": {
+    name: "Novena to St. Jude",
+    desc: "Nine days with the patron of hopeless cases and desperate causes.",
+    days: [
+      D("Apostle and Friend", "St. Jude walked with Jesus, ate with Him, and was sent out by Him. He knows the Lord as a friend knows a friend. St. Jude, bring my need to the One you followed so closely."),
+      D("Hope in Hard Cases", "Some situations look impossible from where I stand. The Church has long turned to St. Jude when every other door seems closed. St. Jude, keep me from despair and hold my hope steady."),
+      D("Faith", "St. Jude once asked Jesus why He would show Himself to the disciples and not to the world. He was not afraid to bring honest questions to the Lord. St. Jude, help me pray honestly and believe deeply."),
+      D("Perseverance", "Your short letter urges believers to build themselves up in faith and keep themselves in the love of God. Perseverance is faith that does not quit. St. Jude, help me keep praying even when the answer is slow."),
+      D("Courage", "Tradition holds that St. Jude carried the Gospel far from home and gave his life for it. Courage is love that is willing to pay a price. St. Jude, give me courage to witness to Christ where I am."),
+      D("Kinship with Christ", "St. Jude was counted among the relatives of the Lord. Through baptism I too am brought into His family. St. Jude, help me live as a true brother or sister of Jesus."),
+      D("Zeal", "Zeal is a burning desire for God to be known and loved. It can grow cold in the routine of ordinary days. St. Jude, rekindle in me a zeal for the salvation of souls."),
+      D("Patience in Trial", "Waiting is often the hardest part of any trouble. God works on a timeline I cannot see. St. Jude, teach me to wait in peace and trust the hidden work of grace."),
+      D("Gratitude", "As this novena ends, I thank God for every answer, including the ones I have not recognized yet. Gratitude turns a petition into praise. St. Jude, help me give thanks in all circumstances.")
+    ],
+    closing: "St. Jude, faithful servant and friend of Jesus, I commend to you my intention and every cause that seems lost. Intercede for me before the throne of God, and obtain for me the grace to accept His will with a trusting heart. Amen."
+  },
+  "st-joseph": {
+    name: "Novena to St. Joseph",
+    desc: "Nine days with the guardian of the Holy Family and patron of the Church.",
+    days: [
+      D("A Just Man", "Scripture calls Joseph a righteous man, and it shows in how gently he planned to protect Mary. Justice in him was always joined to mercy. St. Joseph, make me fair and kind in every dealing."),
+      D("The Obedient Dreamer", "Four times God spoke to Joseph in dreams, and each time he rose and acted without delay. His obedience was swift and quiet. St. Joseph, help me hear God's direction and follow it promptly."),
+      D("Protector of the Holy Family", "Joseph stood guard over the Child and His Mother in poverty, danger, and exile. Every family needs that kind of watchful love. St. Joseph, protect my family and all families under your care."),
+      D("The Worker", "In a small shop in Nazareth, Joseph taught Jesus the dignity of honest labor. Ordinary work, offered to God, becomes holy. St. Joseph, bless my work and help me do it well."),
+      D("Silent Faith", "Not a single word of Joseph is recorded in the Gospels. His faith spoke through what he did. St. Joseph, teach me to speak less and trust more."),
+      D("The Flight into Egypt", "Joseph led his family into a foreign land with little warning and few possessions. He knows the fear of the refugee and the stranger. St. Joseph, guide all who must leave home and keep them safe."),
+      D("Finding in the Temple", "For three days Joseph searched for the lost Jesus with an aching heart. Even the holiest parents knew anxiety and sorrow. St. Joseph, help all who are searching for Jesus to find Him again."),
+      D("Head of the Household", "Joseph led not by force but by service, laying down his own plans for the sake of others. True leadership looks like that. St. Joseph, help me serve those entrusted to me."),
+      D("Patron of a Happy Death", "Tradition holds that Joseph died with Jesus and Mary beside him. No death could be more peaceful. St. Joseph, be with me and those I love at the hour of our death.")
+    ],
+    closing: "Glorious St. Joseph, chosen by God to be the guardian of His Son, I entrust my intention to your fatherly care. Watch over me as you watched over the Holy Family, and lead me safely to Jesus and Mary. Amen."
+  },
+  "perpetual-help": {
+    name: "Our Mother of Perpetual Help",
+    desc: "Nine days before the ancient icon of the Mother who never fails her children.",
+    days: [
+      D("The Icon", "In the icon, the Child Jesus clings to His Mother's hand after seeing the instruments of His Passion. She holds Him and turns her gaze toward me. Mother of Perpetual Help, hold me as you held Him."),
+      D("Mother of the Redeemer", "Mary gave Christ His human flesh and never stopped pointing others toward Him. Her whole life says, do whatever He tells you. Mother, lead me closer to your Son."),
+      D("Refuge of Sinners", "No sinner who turns to Mary is turned away. She knows the cost of every soul because she stood at the cross. Mother of Perpetual Help, intercede for me and for all who have fallen."),
+      D("Help of the Sick", "Illness can make the world small and the heart afraid. Mary is a mother who sits at every bedside. Mother of Perpetual Help, comfort the sick and those who care for them."),
+      D("Help in Temptation", "Temptation comes quietly and often when I am tired or alone. Mary crushed the serpent's head by her yes to God. Mother, keep me close in the moment of trial."),
+      D("Help of Families", "Families carry joys and wounds that only God fully sees. Mary knew the ordinary life of a home in Nazareth. Mother of Perpetual Help, bring peace and healing to my family."),
+      D("Comfort in Sorrow", "Mary's heart was pierced by a sword, as Simeon foretold. She does not stand far from grief. Mother of Perpetual Help, console all who mourn."),
+      D("Help in Our Work", "Daily labor can feel endless and unseen. Mary's hidden years show that small faithfulness matters to God. Mother, sanctify my work and grant me patience."),
+      D("Hope at the Hour of Death", "The Hail Mary ends with a plea for the hour of our death. A mother does not abandon her child at the end. Mother of Perpetual Help, be with me then and always.")
+    ],
+    closing: "Mother of Perpetual Help, you never tire of helping those who call on you. I place my intention in your hands and ask you to present it to your Son. Obtain for me the grace to love Him faithfully all my days. Amen."
+  },
+  "miraculous-medal": {
+    name: "Miraculous Medal Novena",
+    desc: "Nine days pondering the medal Mary gave to St. Catherine Labour\u00e9 in 1830.",
+    days: [
+      D("The Apparition", "In a convent chapel in Paris, Mary appeared to a young novice and asked that a medal be made. Grace often comes to the humble and the hidden. Mary, teach me to listen in quiet prayer as Catherine did."),
+      D("Conceived without Sin", "The medal bears a prayer to Mary conceived without sin, who prays for us who have recourse to her. Her purity is a promise of what grace can do. Immaculate Mary, pray for me as I turn to you now."),
+      D("Rays of Grace", "On the medal, rays stream from Mary's hands to show the graces she obtains for those who ask. Some of her rings gave no light, for graces no one requested. Mary, help me ask boldly for what I need."),
+      D("The Globe", "Mary stands upon the world, showing that her care reaches every land and people. No corner of the earth is beyond her motherhood. Mary, watch over the whole world and every nation in it."),
+      D("The Cross and the Letter M", "On the reverse, the letter M is joined to the cross. Mary's life is forever bound to the sacrifice of her Son. Mother, help me stand faithfully at the foot of the cross."),
+      D("The Two Hearts", "Beneath the cross are the Heart of Jesus crowned with thorns and the Heart of Mary pierced by a sword. Their love is one love, poured out for me. Jesus and Mary, make my heart like yours."),
+      D("The Twelve Stars", "Twelve stars circle the medal, recalling the apostles and the woman clothed with the sun. Mary is the mother of the whole Church. Mary, gather the Church in unity and holiness."),
+      D("Wearing the Medal with Faith", "The medal is no charm, but a sign of trust worn close to the heart. Its power comes from the God who answers prayer. Mary, help me wear your medal with real faith and a changed life."),
+      D("Consecration", "Many who wore the medal found conversion and peace. Every grace is meant to lead me further into the life of God. Mary, I give myself to you so that you may give me wholly to Jesus.")
+    ],
+    closing: "O Mary, conceived without sin, look upon me and all who have recourse to you. I entrust to you my intention and ask you to obtain for me every grace I need for this life and the next. Amen."
+  },
+  "immaculate-conception": {
+    name: "Novena to the Immaculate Conception",
+    desc: "Nine days with Mary under the title of the patroness of the United States.",
+    days: [
+      D("Chosen from the Beginning", "Before Mary drew her first breath, God preserved her from all stain of sin. She was prepared from the start for her mission. Immaculate Mother, help me trust that God has a plan for me too."),
+      D("Full of Grace", "The angel greeted Mary as full of grace, as though it were her very name. There was no room in her for anything that was not of God. Mary, pray that grace may fill every corner of my life."),
+      D("The New Eve", "Where Eve said no, Mary said yes, and the story of the world turned. Her obedience undid the knot of disobedience. Mary, help me say yes to God in small and large things."),
+      D("Purity of Heart", "Blessed are the pure in heart, for they shall see God. Mary's purity was not coldness but undivided love. Immaculate Mary, purify my heart and my intentions."),
+      D("Humility", "Mary called herself the handmaid of the Lord and gave all glory to God. Her greatness was her lowliness. Mary, root out my pride and teach me true humility."),
+      D("Her Fiat", "Let it be done to me according to your word. With these words Mary welcomed God into the world. Immaculate Mother, help me surrender to God's will with your trust."),
+      D("Patroness of Our Nation", "The bishops of the United States placed this country under Mary's protection as the Immaculate Conception. She cares for nations as a mother cares for her children. Mary, guide our country toward justice, peace, and faith."),
+      D("Mother of the Church", "From the cross, Jesus gave His Mother to the beloved disciple and to all of us. She prays for the Church as she prayed with the apostles. Mary, protect the Church and all her members."),
+      D("Hope of Glory", "In Mary we see what God intends for all the redeemed, a life wholly transformed by grace. She is the first fruit of redemption. Immaculate Mary, help me reach the glory God has prepared for me.")
+    ],
+    closing: "Immaculate Virgin Mary, chosen and preserved by God, I entrust my intention to your loving care. Obtain for me purity of heart and the grace to live always as a faithful child of God. Amen."
+  }
+};
+
+var CUSTOM = {
+  name: "Custom Novena",
+  desc: "Nine days of trust and surrender built around your own intention.",
+  days: [
+    D("Trust", "I begin by placing {intention} into God's hands, where it was safe all along. He knows my need before I speak it. Lord, I trust in You; receive my prayer."),
+    D("Surrender", "Today I loosen my grip on how {intention} must turn out. God's answer may be different and better than my plan. Lord, I surrender this to Your will."),
+    D("Patience", "Prayer for {intention} may take time, and waiting is its own school of faith. God is never late, even when He is slow. Lord, give me patience as I wait on You."),
+    D("Humility", "I come to God with {intention} as a child, not as one who demands. He owes me nothing and gives me everything. Lord, keep me humble and honest before You."),
+    D("Perseverance", "Halfway through, I keep praying for {intention} even if I feel nothing. Faithfulness matters more than feeling. Lord, help me finish what I began."),
+    D("Hope", "Whatever happens with {intention}, my hope rests in God, not in outcomes. He brings good out of every circumstance for those who love Him. Lord, keep my hope alive."),
+    D("Charity", "Today I pray for {intention} and also for someone else who carries a heavier burden. Love widens the heart that prays. Lord, teach me to love my neighbor as myself."),
+    D("Peace", "I let go of anxiety about {intention} and rest in the presence of God. His peace is not the absence of trouble but the nearness of Christ. Lord, grant me Your peace."),
+    D("Gratitude", "On this final day I thank God for hearing my prayer for {intention}. Every answer, even a hidden one, is a gift. Lord, I give You thanks for all Your goodness.")
+  ],
+  closing: "Heavenly Father, I have prayed these nine days for my intention. I trust that You have heard me and that You will answer in the way that is best for my salvation. Through Jesus Christ our Lord, in the unity of the Holy Spirit. Amen."
+};
+
+var ORDER = ["holy-spirit","divine-mercy","st-jude","st-joseph","perpetual-help","miraculous-medal","immaculate-conception"];
+
+function getNovena(id){ return id === "custom" ? CUSTOM : NOVENAS[id]; }
+
+var APP_URL = "https://augustineiacopelli.github.io/appaday-157-novena-companion/";
+
+/* ---------- traditional dates ---------- */
+function easter(y){
+  var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4,
+      f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3),
+      h2 = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+      l = (32 + 2 * e + 2 * i - h2 - k) % 7, m = Math.floor((a + 11 * h2 + 22 * l) / 451),
+      month = Math.floor((h2 + l - 7 * m + 114) / 31), day = ((h2 + l - 7 * m + 114) % 31) + 1;
+  return new Date(y, month - 1, day);
+}
+function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+
+var TRAD = {
+  "holy-spirit": { text: "Traditionally prayed from the Friday after Ascension Thursday through the eve of Pentecost, the first novena, kept by the apostles with Mary.", start: function(y){ return addDays(easter(y), 40); } },
+  "divine-mercy": { text: "Traditionally begun on Good Friday and finished the day before Divine Mercy Sunday.", start: function(y){ return addDays(easter(y), -2); } },
+  "st-jude": { text: "Traditionally prayed October 19 to 27, ending the eve of his feast on October 28.", start: function(y){ return new Date(y, 9, 19); } },
+  "st-joseph": { text: "Traditionally prayed March 10 to 18, ending the eve of his solemnity on March 19.", start: function(y){ return new Date(y, 2, 10); } },
+  "perpetual-help": { text: "Traditionally prayed June 18 to 26, ending the eve of her feast on June 27. Many parishes also keep a perpetual novena to her every Wednesday.", start: function(y){ return new Date(y, 5, 18); } },
+  "miraculous-medal": { text: "Traditionally prayed November 18 to 26, ending the eve of the feast on November 27. Many parishes also keep a perpetual novena every Monday.", start: function(y){ return new Date(y, 10, 18); } },
+  "immaculate-conception": { text: "Traditionally prayed November 29 to December 7, ending the eve of the solemnity on December 8.", start: function(y){ return new Date(y, 10, 29); } },
+  "custom": { text: "Pray it any time, for any intention.", start: null }
+};
+
+function fmtShort(d, withYear){
+  var o = { month: "short", day: "numeric" };
+  if (withYear) o.year = "numeric";
+  try { return d.toLocaleDateString(undefined, o); } catch (e) { return d.toDateString(); }
+}
+/* Next traditional window that has not yet ended, or null for custom. */
+function tradWindow(id, today){
+  var t = TRAD[id];
+  if (!t || !t.start) return null;
+  var y = today.getFullYear();
+  for (var yy = y; yy <= y + 1; yy++) {
+    var s = t.start(yy), e = addDays(s, 8);
+    if (e.getTime() >= today.getTime()) return { start: s, end: e, now: s.getTime() <= today.getTime() };
+  }
+  return null;
+}
+function tradLine(id, today){
+  var w = tradWindow(id, today);
+  if (!w) return "";
+  var yr = w.start.getFullYear() !== today.getFullYear();
+  if (w.now) {
+    var n = Math.round((today.getTime() - w.start.getTime()) / 86400000) + 1;
+    return "In season now: traditional Day " + n + " of 9, ending " + fmtShort(w.end, false) + ".";
+  }
+  return "Next traditional start: " + fmtShort(w.start, yr) + " to " + fmtShort(w.end, yr) + ".";
+}
+
+/* ---------- state ---------- */
+function emptyState(){ return { version: 1, active: null, completed: 0 }; }
+
+function validActive(a){
+  if (a === null) return true;
+  if (!a || typeof a !== "object") return false;
+  if (typeof a.novenaId !== "string" || !getNovena(a.novenaId)) return false;
+  if (typeof a.intention !== "string") return false;
+  if (typeof a.startDate !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(a.startDate)) return false;
+  if (!Array.isArray(a.checked) || a.checked.length !== 9) return false;
+  for (var i = 0; i < 9; i++) if (typeof a.checked[i] !== "boolean") return false;
+  return true;
+}
+
+function loadState(){
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return emptyState();
+    var s = JSON.parse(raw);
+    if (!s || typeof s !== "object" || s.version !== 1 || !validActive(s.active) ||
+        typeof s.completed !== "number" || !isFinite(s.completed) || s.completed < 0) return emptyState();
+    if (s.active) s.active.intention = s.active.intention.slice(0, MAX_INTENT);
+    if (typeof s.reminderTime !== "string" || !/^\d{2}:\d{2}$/.test(s.reminderTime)) delete s.reminderTime;
+    return s;
+  } catch (e) { return emptyState(); }
+}
+
+function saveState(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+/* ---------- dates (local time, DST safe) ---------- */
+function pad(n){ return (n < 10 ? "0" : "") + n; }
+function todayStr(d){
+  d = d || new Date();
+  return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+}
+function parseLocal(str){
+  var p = str.split("-");
+  return new Date(+p[0], +p[1] - 1, +p[2]);
+}
+function dayNumber(st, today){
+  if (!st.active) return 0;
+  var diff = parseLocal(today).getTime() - parseLocal(st.active.startDate).getTime();
+  var n = Math.round(diff / 86400000) + 1;
+  return n < 1 ? 1 : n;
+}
+function daysRemaining(st, today){
+  var r = 9 - Math.min(dayNumber(st, today), 9);
+  return r < 0 ? 0 : r;
+}
+function streak(st, today){
+  if (!st.active) return 0;
+  var c = st.active.checked;
+  var dn = dayNumber(st, today);
+  function isOn(day){ return day >= 1 && day <= 9 && c[day - 1] === true; }
+  var start;
+  if (isOn(dn)) start = dn;
+  else if (isOn(dn - 1)) start = dn - 1;
+  else return 0;
+  var n = 0;
+  for (var d = start; isOn(d); d--) n++;
+  return n;
+}
+function allChecked(a){ for (var i = 0; i < 9; i++) if (!a.checked[i]) return false; return true; }
+
+/* ---------- DOM helpers ---------- */
+function h(tag, attrs, kids){
+  var el = document.createElement(tag);
+  if (attrs) for (var k in attrs) {
+    if (!Object.prototype.hasOwnProperty.call(attrs, k)) continue;
+    var v = attrs[k];
+    if (k === "text") el.textContent = v;
+    else if (k === "cls") el.className = v;
+    else if (k.slice(0, 2) === "on") el.addEventListener(k.slice(2), v);
+    else if (v === true) el.setAttribute(k, "");
+    else if (v !== false && v != null) el.setAttribute(k, v);
+  }
+  if (kids) for (var i = 0; i < kids.length; i++) if (kids[i]) el.appendChild(typeof kids[i] === "string" ? document.createTextNode(kids[i]) : kids[i]);
+  return el;
+}
+function clear(el){ while (el.firstChild) el.removeChild(el.firstChild); }
+
+var SVGNS = "http://www.w3.org/2000/svg";
+function flameSvg(){
+  var s = document.createElementNS(SVGNS, "svg");
+  s.setAttribute("viewBox", "0 0 40 56"); s.setAttribute("class", "flame"); s.setAttribute("aria-hidden", "true");
+  var body = document.createElementNS(SVGNS, "rect");
+  body.setAttribute("x", "13"); body.setAttribute("y", "26"); body.setAttribute("width", "14"); body.setAttribute("height", "28");
+  body.setAttribute("rx", "2"); body.setAttribute("fill", "#efe6cf");
+  var wick = document.createElementNS(SVGNS, "rect");
+  wick.setAttribute("x", "19.2"); wick.setAttribute("y", "21"); wick.setAttribute("width", "1.6"); wick.setAttribute("height", "6"); wick.setAttribute("fill", "#3a2f22");
+  var g = document.createElementNS(SVGNS, "g"); g.setAttribute("class", "flicker");
+  var outer = document.createElementNS(SVGNS, "path");
+  outer.setAttribute("d", "M20 2 C27 10 29 16 26 21 C24 24.5 16 24.5 14 21 C11 16 13 10 20 2 Z"); outer.setAttribute("fill", "#e8b54a");
+  var inner = document.createElementNS(SVGNS, "path");
+  inner.setAttribute("d", "M20 10 C23.5 14 24 17.5 22.5 20 C21.5 21.6 18.5 21.6 17.5 20 C16 17.5 16.5 14 20 10 Z"); inner.setAttribute("fill", "#fff4d6");
+  g.appendChild(outer); g.appendChild(inner);
+  s.appendChild(g); s.appendChild(wick); s.appendChild(body);
+  return s;
+}
+
+/* ---------- confirm modal ---------- */
+var modal = document.getElementById("modal");
+var modalMsg = document.getElementById("modal-msg");
+var modalOk = document.getElementById("modal-ok");
+var modalCancel = document.getElementById("modal-cancel");
+var pendingConfirm = null;
+var lastFocus = null;
+function askConfirm(msg, okLabel, fn){
+  modalMsg.textContent = msg;
+  modalOk.textContent = okLabel;
+  pendingConfirm = fn;
+  lastFocus = document.activeElement;
+  modal.hidden = false;
+  modalCancel.focus();
+}
+function closeModal(){ modal.hidden = true; pendingConfirm = null; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+modalCancel.addEventListener("click", closeModal);
+modalOk.addEventListener("click", function(){ var fn = pendingConfirm; closeModal(); if (fn) fn(); });
+modal.addEventListener("click", function(e){ if (e.target === modal) closeModal(); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !modal.hidden) closeModal(); });
+
+/* ---------- views ---------- */
+var views = {
+  picker: document.getElementById("view-picker"),
+  day: document.getElementById("view-day"),
+  complete: document.getElementById("view-complete")
+};
+function show(name){
+  for (var k in views) if (Object.prototype.hasOwnProperty.call(views, k)) views[k].hidden = (k !== name);
+}
+
+var state = loadState();
+var viewDay = null;
+var selectedId = null;
+
+function render(){
+  if (!state.active) { renderPicker(); return; }
+  var dn = dayNumber(state, todayStr());
+  if (state.active.done || dn > 9) { renderComplete(); return; }
+  if (viewDay === null || viewDay > dn) viewDay = dn;
+  renderDay(viewDay);
+}
+
+function renderPicker(){
+  var v = views.picker; clear(v);
+  v.appendChild(h("p", { cls: "lede", text: "Pray a novena" }));
+  v.appendChild(h("p", { cls: "sub", text: "Nine days of prayer for one intention. Choose a devotion to begin today." + (state.completed ? " Novenas completed: " + state.completed + "." : "") }));
+  var list = h("div", { cls: "list", role: "list" });
+  var todayD = parseLocal(todayStr());
+  var ids = ORDER.slice().sort(function(x, y){
+    var wx = tradWindow(x, todayD), wy = tradWindow(y, todayD);
+    var tx = wx ? wx.start.getTime() : Infinity, ty = wy ? wy.start.getTime() : Infinity;
+    return tx - ty || ORDER.indexOf(x) - ORDER.indexOf(y);
+  }).concat(["custom"]);
+  var input, countEl, startBtn, box;
+  ids.forEach(function(id){
+    var n = getNovena(id);
+    list.appendChild(h("button", {
+      type: "button", cls: "pick" + (id === "custom" ? " custom" : ""), role: "listitem",
+      "aria-pressed": selectedId === id ? "true" : "false",
+      onclick: function(){
+        selectedId = id;
+        var all = list.querySelectorAll(".pick");
+        for (var i = 0; i < all.length; i++) all[i].setAttribute("aria-pressed", all[i] === this ? "true" : "false");
+        box.hidden = false;
+        startBtn.textContent = "Begin " + n.name;
+        input.placeholder = id === "custom" ? "Required: what are you praying for?" : "Optional: what are you praying for?";
+        updateStart();
+        box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }, [h("b", { text: n.name }), h("span", { text: n.desc }),
+        id !== "custom" ? h("span", { cls: "when", text: tradLine(id, parseLocal(todayStr())) }) : null]));
+  });
+  v.appendChild(list);
+
+  input = h("textarea", { id: "intent-input", maxlength: String(MAX_INTENT), rows: "3" });
+  countEl = h("div", { cls: "count", text: "0 / " + MAX_INTENT });
+  startBtn = h("button", { type: "button", cls: "btn gold", onclick: startNovena });
+  function updateStart(){
+    if (input.value.length > MAX_INTENT) input.value = input.value.slice(0, MAX_INTENT);
+    countEl.textContent = input.value.length + " / " + MAX_INTENT;
+    startBtn.disabled = !selectedId || (selectedId === "custom" && !input.value.trim());
+  }
+  input.addEventListener("input", updateStart);
+  box = h("div", { cls: "startbox", hidden: !selectedId }, [
+    h("label", { "for": "intent-input", text: "Your intention" }), input, countEl, startBtn
+  ]);
+  v.appendChild(box);
+  if (selectedId) { startBtn.textContent = "Begin " + getNovena(selectedId).name; updateStart(); }
+
+  function startNovena(){
+    if (!selectedId) return;
+    var text = input.value.trim().slice(0, MAX_INTENT);
+    if (selectedId === "custom" && !text) return;
+    state.active = { novenaId: selectedId, intention: text, startDate: todayStr(), checked: [false,false,false,false,false,false,false,false,false] };
+    selectedId = null; viewDay = null;
+    saveState(); render(); window.scrollTo(0, 0);
+  }
+  show("picker");
+}
+
+function renderDay(vd){
+  var a = state.active, n = getNovena(a.novenaId);
+  var today = todayStr();
+  var dn = dayNumber(state, today);
+  var v = views.day; clear(v);
+
+  var head = h("div", { cls: "dhead" }, [flameSvg(), h("div", null, [
+    h("h2", { text: n.name }),
+    a.intention ? h("p", { cls: "intent", text: "For " + a.intention }) : null
+  ])]);
+  v.appendChild(head);
+  var tl = tradLine(a.novenaId, parseLocal(today));
+  v.appendChild(h("p", { cls: "trad" }, [TRAD[a.novenaId].text + (tl ? " " : ""), tl ? h("b", { text: tl }) : null]));
+
+  v.appendChild(h("div", { cls: "stats" }, [
+    h("div", { cls: "stat" }, [h("b", { text: "Day " + dn }), h("span", { text: "of 9" })]),
+    h("div", { cls: "stat" }, [h("b", { text: String(daysRemaining(state, today)) }), h("span", { text: "days left" })]),
+    h("div", { cls: "stat" }, [h("b", { text: String(streak(state, today)) }), h("span", { text: "streak" })])
+  ]));
+
+  var dots = h("div", { cls: "dots", role: "group", "aria-label": "Novena progress" });
+  for (var i = 1; i <= 9; i++) (function(d){
+    var cls = "dot", label = "Day " + d, checked = a.checked[d - 1];
+    if (checked) { cls += " checked"; label += ", prayed"; }
+    if (d === dn) { cls += " today"; label += ", today"; }
+    else if (d > dn) { cls += " future"; label += ", upcoming"; }
+    else if (!checked) { cls += " missed"; label += ", not yet prayed"; }
+    if (d === vd) cls += " viewing";
+    dots.appendChild(h("button", {
+      type: "button", cls: cls, "aria-label": label, "aria-current": d === vd ? "true" : false,
+      disabled: d > dn,
+      onclick: function(){ if (d > dn) return; viewDay = d; renderDay(d); }
+    }, [h("i", { text: String(d) })]));
+  })(i);
+  v.appendChild(dots);
+
+  var day = n.days[vd - 1];
+  var med = day.med.split("{intention}").join(a.intention ? a.intention : "my intention");
+  var card = h("article", { cls: "card" }, [
+    vd < dn ? h("p", { cls: "past-note", text: "Viewing a past day. You can still mark it prayed." }) : null,
+    h("p", { cls: "theme", text: "Day " + vd + " meditation" }),
+    h("h3", { text: day.theme }),
+    h("p", { cls: "med", text: med })
+  ]);
+  v.appendChild(card);
+
+  var pr = h("div", { cls: "prayers" });
+  ["ourFather", "hailMary", "gloryBe"].forEach(function(k){
+    pr.appendChild(h("details", null, [h("summary", { text: PRAYERS[k].title }), h("p", { text: PRAYERS[k].text })]));
+  });
+  v.appendChild(pr);
+
+  v.appendChild(h("div", { cls: "card closing" }, [h("h4", { text: "Closing prayer" }), h("p", { text: n.closing })]));
+
+  var on = a.checked[vd - 1];
+  v.appendChild(h("button", {
+    type: "button", cls: "btn checkbtn", "aria-pressed": on ? "true" : "false",
+    text: on ? "Day " + vd + " prayed" : "Mark Day " + vd + " prayed",
+    onclick: function(){ toggleCheck(vd); }
+  }));
+  v.appendChild(h("button", { type: "button", cls: "btn ghost", text: "Begin a different novena", onclick: beginNew }));
+  show("day");
+}
+
+function toggleCheck(d){
+  var a = state.active; if (!a) return;
+  var dn = dayNumber(state, todayStr());
+  if (d < 1 || d > 9 || d > dn) return;
+  a.checked[d - 1] = !a.checked[d - 1];
+  if (allChecked(a) && !a.done) {
+    a.done = true;
+    state.completed += 1;
+    saveState(); renderComplete(); window.scrollTo(0, 0);
+    return;
+  }
+  saveState(); renderDay(d);
+}
+
+function renderComplete(){
+  var a = state.active, n = getNovena(a.novenaId), v = views.complete; clear(v);
+  var prayed = 0; for (var i = 0; i < 9; i++) if (a.checked[i]) prayed++;
+  var full = prayed === 9;
+  v.appendChild(h("div", { cls: "complete" }, [
+    flameSvg(),
+    h("h2", { text: full ? "Novena complete" : "Your nine days are finished" }),
+    h("p", { cls: "tally", text: n.name }),
+    a.intention ? h("p", { cls: "intent", text: "For " + a.intention }) : null,
+    h("p", { text: full ? "All nine days prayed. Thanks be to God." : prayed + " of 9 days prayed. God sees every prayer offered." }),
+    h("p", { text: "Novenas completed: " + state.completed }),
+    h("div", { cls: "card closing", style: "text-align:left;margin-top:1rem" }, [h("h4", { text: "Closing prayer" }), h("p", { text: n.closing })]),
+    h("button", { type: "button", cls: "btn gold", text: "Begin a new novena", onclick: beginNew })
+  ]));
+  show("complete");
+}
+
+function beginNew(){
+  var a = state.active;
+  var finished = a && (a.done || dayNumber(state, todayStr()) > 9);
+  function go(){ state.active = null; viewDay = null; selectedId = null; saveState(); render(); window.scrollTo(0, 0); }
+  if (finished) { go(); return; }
+  askConfirm("End this novena and choose a new one? Your progress on it will be cleared.", "End novena", go);
+}
+
+document.getElementById("reset-link").addEventListener("click", function(){
+  askConfirm("Erase all data, including your current novena and completed count?", "Erase", function(){
+    try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+    state = emptyState(); viewDay = null; selectedId = null; render(); window.scrollTo(0, 0);
+  });
+});
+
+document.addEventListener("visibilitychange", function(){ if (!document.hidden && modal.hidden && settings.hidden) { viewDay = null; render(); } });
+
+/* ---------- calendar reminders ---------- */
+var DEFAULT_TIME = "20:00";
+var MIN_TIME = "06:30";
+function userTz(){
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) { return ""; }
+}
+function dayLink(id, d){ return APP_URL + "#novena=" + id + (d ? "&day=" + d : ""); }
+function stamp(d){ /* local wall time, no zone */
+  return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "T" + pad(d.getHours()) + pad(d.getMinutes()) + "00";
+}
+function utcStamp(d){
+  return d.getUTCFullYear() + pad(d.getUTCMonth() + 1) + pad(d.getUTCDate()) + "T" + pad(d.getUTCHours()) + pad(d.getUTCMinutes()) + pad(d.getUTCSeconds()) + "Z";
+}
+function icsEsc(s){ return String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+function fold(line){ /* RFC 5545: lines of at most 75 octets */
+  var enc = typeof TextEncoder !== "undefined" ? new TextEncoder() : null;
+  var out = [], cur = "", bytes = 0, limit = 75;
+  for (var i = 0; i < line.length; i++) {
+    var ch = line.charAt(i);
+    var code = line.charCodeAt(i);
+    if (code >= 0xD800 && code <= 0xDBFF && i + 1 < line.length) { ch += line.charAt(++i); }
+    var b = enc ? enc.encode(ch).length : 1;
+    if (bytes + b > limit) { out.push(cur); cur = " "; bytes = 1; limit = 75; }
+    cur += ch; bytes += b;
+  }
+  out.push(cur);
+  return out.join("\r\n");
+}
+function offStr(min){
+  var s = min < 0 ? "-" : "+"; min = Math.abs(min);
+  return s + pad(Math.floor(min / 60)) + pad(min % 60);
+}
+/* Returns VTIMEZONE lines, or null to fall back to floating local times. */
+function vtimezone(tz){
+  if (tz === "America/Chicago") return [
+    "BEGIN:VTIMEZONE", "TZID:America/Chicago", "X-LIC-LOCATION:America/Chicago",
+    "BEGIN:DAYLIGHT", "TZOFFSETFROM:-0600", "TZOFFSETTO:-0500", "TZNAME:CDT",
+    "DTSTART:19700308T020000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU", "END:DAYLIGHT",
+    "BEGIN:STANDARD", "TZOFFSETFROM:-0500", "TZOFFSETTO:-0600", "TZNAME:CST",
+    "DTSTART:19701101T020000", "RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU", "END:STANDARD",
+    "END:VTIMEZONE"];
+  if (!tz) return null;
+  var y = new Date().getFullYear();
+  var jan = -new Date(y, 0, 1).getTimezoneOffset(), jul = -new Date(y, 6, 1).getTimezoneOffset();
+  if (jan === jul) return ["BEGIN:VTIMEZONE", "TZID:" + tz, "BEGIN:STANDARD",
+    "TZOFFSETFROM:" + offStr(jan), "TZOFFSETTO:" + offStr(jan), "DTSTART:19700101T000000", "END:STANDARD", "END:VTIMEZONE"];
+  if (tz.indexOf("America/") === 0 && jul > jan) return ["BEGIN:VTIMEZONE", "TZID:" + tz,
+    "BEGIN:DAYLIGHT", "TZOFFSETFROM:" + offStr(jan), "TZOFFSETTO:" + offStr(jul),
+    "DTSTART:19700308T020000", "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU", "END:DAYLIGHT",
+    "BEGIN:STANDARD", "TZOFFSETFROM:" + offStr(jul), "TZOFFSETTO:" + offStr(jan),
+    "DTSTART:19701101T020000", "RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU", "END:STANDARD",
+    "END:VTIMEZONE"];
+  return null;
+}
+function reminderDays(){
+  var a = state.active; if (!a) return [];
+  var dn = dayNumber(state, todayStr()), list = [];
+  for (var d = Math.max(dn, 1); d <= 9; d++) list.push(d);
+  return list;
+}
+function eventStart(d, time){
+  var base = addDays(parseLocal(state.active.startDate), d - 1), p = time.split(":");
+  return new Date(base.getFullYear(), base.getMonth(), base.getDate(), +p[0], +p[1]);
+}
+function buildIcs(time){
+  var a = state.active, n = getNovena(a.novenaId), tz = userTz(), vt = vtimezone(tz);
+  var now = utcStamp(new Date());
+  var L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//AppADay//Novena Companion 157//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+           "X-WR-CALNAME:" + icsEsc(n.name)];
+  if (vt) L = L.concat(vt);
+  reminderDays().forEach(function(d){
+    var s = eventStart(d, time), e = new Date(s.getTime() + 15 * 60000);
+    var link = dayLink(a.novenaId, d);
+    var desc = "Day " + d + " of 9: " + n.days[d - 1].theme + "." + (a.intention ? "\nFor " + a.intention : "") + "\n\nPray today: " + link;
+    var zone = vt ? ";TZID=" + tz : "";
+    L.push("BEGIN:VEVENT",
+      "UID:appaday157-" + a.startDate + "-" + a.novenaId + "-d" + d + "@augustineiacopelli.github.io",
+      "DTSTAMP:" + now,
+      "DTSTART" + zone + ":" + stamp(s),
+      "DTEND" + zone + ":" + stamp(e),
+      "SUMMARY:" + icsEsc("Novena Day " + d + ": " + n.name),
+      "DESCRIPTION:" + icsEsc(desc),
+      "URL:" + link,
+      "CLASS:PRIVATE",
+      "TRANSP:TRANSPARENT",
+      "BEGIN:VALARM", "ACTION:DISPLAY", "TRIGGER:PT0M",
+      "DESCRIPTION:" + icsEsc("Time to pray Day " + d + " of your novena"),
+      "END:VALARM",
+      "END:VEVENT");
+  });
+  L.push("END:VCALENDAR");
+  return L.map(fold).join("\r\n") + "\r\n";
+}
+function googleUrl(time){
+  var a = state.active, n = getNovena(a.novenaId), days = reminderDays(), tz = userTz();
+  var s = eventStart(days[0], time), e = new Date(s.getTime() + 15 * 60000);
+  var details = "Pray today's novena day: " + dayLink(a.novenaId) + (a.intention ? "\nFor " + a.intention : "");
+  var q = "action=TEMPLATE&text=" + encodeURIComponent("Novena: " + n.name) +
+    "&dates=" + stamp(s) + "/" + stamp(e) +
+    (tz ? "&ctz=" + encodeURIComponent(tz) : "") +
+    (days.length > 1 ? "&recur=" + encodeURIComponent("RRULE:FREQ=DAILY;COUNT=" + days.length) : "") +
+    "&details=" + encodeURIComponent(details);
+  return "https://calendar.google.com/calendar/render?" + q;
+}
+function downloadIcs(time){
+  var text = buildIcs(time), name = "novena-" + state.active.novenaId + ".ics";
+  var standalone = window.navigator.standalone === true;
+  if (standalone) { window.location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(text); return; }
+  try {
+    var url = URL.createObjectURL(new Blob([text], { type: "text/calendar;charset=utf-8" }));
+    var link = h("a", { href: url, download: name, style: "display:none" });
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  } catch (e) {
+    window.location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(text);
+  }
+}
+
+var settings = document.getElementById("settings");
+var settingsBody = document.getElementById("settings-body");
+var settingsClose = document.getElementById("settings-close");
+function openSettings(){
+  clear(settingsBody);
+  var a = state.active;
+  var dn = a ? dayNumber(state, todayStr()) : 0;
+  if (!a || a.done || dn > 9) {
+    settingsBody.appendChild(h("p", { cls: "note", text: "Begin a novena first, then come back here to add its nine days to your calendar." }));
+  } else {
+    var n = getNovena(a.novenaId), days = reminderDays();
+    var time = h("input", { type: "time", id: "rem-time", min: MIN_TIME, step: "300", value: state.reminderTime || DEFAULT_TIME });
+    var gLink = h("a", { cls: "btn ghost", target: "_blank", rel: "noopener", text: "Add to Google Calendar" });
+    function cur(){ var t = time.value || DEFAULT_TIME; if (t < MIN_TIME) t = MIN_TIME; return t; }
+    function sync(){ gLink.href = googleUrl(cur()); }
+    time.addEventListener("change", function(){ if (time.value && time.value < MIN_TIME) time.value = MIN_TIME; state.reminderTime = cur(); saveState(); sync(); });
+    sync();
+    settingsBody.appendChild(h("p", { cls: "note", style: "margin-top:0", text: n.name + ", Days " + days[0] + (days.length > 1 ? " to 9" : "") + ". One private reminder per day, each linking straight to that day's prayer." }));
+    settingsBody.appendChild(h("label", { "for": "rem-time", style: "margin-top:.75rem", text: "Daily reminder time" }));
+    settingsBody.appendChild(time);
+    settingsBody.appendChild(h("button", { type: "button", cls: "btn gold", text: "Download calendar file (.ics)", onclick: function(){ downloadIcs(cur()); } }));
+    settingsBody.appendChild(h("p", { cls: "note", text: "Opens in Outlook and Apple Calendar, and imports into Google Calendar under Settings, Import and export." }));
+    settingsBody.appendChild(gLink);
+    settingsBody.appendChild(h("p", { cls: "note", text: "Google's quick add makes one repeating event that opens your current day." + (userTz() ? " Times are in " + userTz() + "." : "") }));
+  }
+  lastFocus = document.activeElement;
+  settings.hidden = false;
+  settingsClose.focus();
+}
+function closeSettings(){ settings.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+document.getElementById("gear").addEventListener("click", openSettings);
+settingsClose.addEventListener("click", closeSettings);
+settings.addEventListener("click", function(e){ if (e.target === settings) closeSettings(); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !settings.hidden) closeSettings(); });
+
+/* ---------- deep links: #novena=<id>&day=<n> ---------- */
+function applyHash(){
+  var hs = window.location.hash || "";
+  var mId = /novena=([a-z-]+)/.exec(hs), mDay = /day=(\d)/.exec(hs);
+  if (!mId || !getNovena(mId[1])) return false;
+  try { history.replaceState(null, "", window.location.pathname + window.location.search); } catch (e) {}
+  var id = mId[1], a = state.active;
+  if (a && a.novenaId === id) {
+    var dn = dayNumber(state, todayStr());
+    viewDay = mDay ? Math.max(1, Math.min(+mDay[1], dn, 9)) : null;
+  } else if (!a) {
+    selectedId = id;
+  }
+  return true;
+}
+window.addEventListener("hashchange", function(){ if (applyHash()) { render(); window.scrollTo(0, 0); } });
+
+window.__novena = { todayStr: todayStr, parseLocal: parseLocal, dayNumber: dayNumber, daysRemaining: daysRemaining, streak: streak, buildIcs: buildIcs, googleUrl: googleUrl, tradLine: tradLine };
+
+applyHash();
+render();
+})();
+</script>
+</body>
+</html>
