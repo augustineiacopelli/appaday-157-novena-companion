@@ -37,7 +37,7 @@ main{flex:1;width:100%;max-width:40rem;margin:0 auto;padding:1.25rem 1rem 2rem}
 .lede{font-family:var(--serif);font-size:1.35rem;margin:.25rem 0 .35rem;color:var(--gold-soft)}
 .sub{color:var(--muted);margin:0 0 1.25rem}
 .list{display:grid;gap:.65rem}
-.pick{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:.9rem;
+.pick{display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:.9rem;
   padding:.9rem 1rem;min-height:44px;cursor:pointer;transition:border-color .15s,background .15s}
 .pick:hover{border-color:var(--accent-hi)}
 .pick[aria-pressed="true"]{border-color:var(--gold);background:var(--card2);box-shadow:0 0 0 1px var(--gold) inset}
@@ -124,7 +124,7 @@ a.btn{text-decoration:none}
 @keyframes flick{0%,100%{transform:scale(1,1)}30%{transform:scale(.94,1.05)}60%{transform:scale(1.04,.96)}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-width:400px){.topbar{gap:.5rem;padding-left:.75rem;padding-right:.5rem}.topbar h1{font-size:1rem}.home{padding:0 .25rem;font-size:.85rem}}
-@media (min-width:700px){main{padding-top:2rem}.list{grid-template-columns:1fr 1fr}.pick.custom{grid-column:1/-1}}
+@media (min-width:700px){main{padding-top:2rem}.list{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -524,7 +524,9 @@ function renderPicker(){
     var wx = tradWindow(x, todayD), wy = tradWindow(y, todayD);
     var tx = wx ? wx.start.getTime() : Infinity, ty = wy ? wy.start.getTime() : Infinity;
     return tx - ty || ORDER.indexOf(x) - ORDER.indexOf(y);
-  }).concat(["custom"]);
+  });
+  var inSeason = ids.some(function(id){ var w = tradWindow(id, todayD); return w && w.now; });
+  ids = inSeason ? ids.concat(["custom"]) : ["custom"].concat(ids);
   var input, countEl, startBtn, box;
   ids.forEach(function(id){
     var n = getNovena(id);

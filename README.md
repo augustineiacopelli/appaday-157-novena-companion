@@ -21,7 +21,7 @@ Ending a novena early or erasing all data asks for confirmation in an in-app dia
 
 ## Traditional dates
 
-Each built in novena shows when it is traditionally prayed and the next upcoming window, or flags it as in season now. The Holy Spirit novena runs from the Friday after Ascension Thursday to the eve of Pentecost and Divine Mercy from Good Friday to the eve of Divine Mercy Sunday, both computed from the date of Easter each year. The rest end on the eve of a fixed feast: St. Joseph (March 10 to 18), Perpetual Help (June 18 to 26), St. Jude (October 19 to 27), Miraculous Medal (November 18 to 26), and the Immaculate Conception (November 29 to December 7).
+Each built in novena shows when it is traditionally prayed and the next upcoming window, or flags it as in season now. The picker lists the novenas in order of their next traditional start, recalculated each time the app opens. Custom Novena leads the list, except while a traditional window is in season, when that novena moves to the top and Custom drops to the end. The Holy Spirit novena runs from the Friday after Ascension Thursday to the eve of Pentecost and Divine Mercy from Good Friday to the eve of Divine Mercy Sunday, both computed from the date of Easter each year. The rest end on the eve of a fixed feast: St. Joseph (March 10 to 18), Perpetual Help (June 18 to 26), St. Jude (October 19 to 27), Miraculous Medal (November 18 to 26), and the Immaculate Conception (November 29 to December 7).
 
 ## Calendar reminders
 
