@@ -13,6 +13,8 @@ Seven built in novenas are included: the Holy Spirit (the seven gifts), Divine M
 
 A Custom Novena follows a nine day arc of Trust, Surrender, Patience, Humility, Perseverance, Hope, Charity, Peace, and Gratitude, with your intention woven into each day's meditation. An intention is required for the custom novena and optional for the others, and is limited to 140 characters.
 
+The Custom Novena can also carry your own prayers, such as the text of a prayer card or a parish novena booklet. Add them from the gear menu or from the Your prayers card on any custom novena day. Each prayer has an optional title, up to 2,000 characters of text with line breaks kept, and a schedule of every day or a single day from 1 to 9. Prayers appear open beneath that day's meditation, can be edited or deleted at any time (deleting asks first), and stay saved for future custom novenas. Up to 12 prayers can be kept.
+
 ## How it works
 
 The novena starts on the day you begin it. Day numbers are computed from local calendar dates, so they stay correct across daylight saving time changes. Tap any past dot to read that day again and mark it prayed after the fact; future days stay locked. The streak counts consecutive prayed days ending today, or ending yesterday if today is not yet marked. Marking the last of the nine days opens the completion screen and adds one to your lifetime count of completed novenas. If nine days pass without finishing, the app moves to a summary showing how many days were prayed.
@@ -25,7 +27,7 @@ Each built in novena shows when it is traditionally prayed and the next upcoming
 
 ## Calendar reminders
 
-The gear in the header opens Prayer reminders. Pick a daily time (no earlier than 6:30 AM) and either download an .ics file or add a repeating event to Google Calendar.
+The gear in the header opens Settings, which holds Calendar reminders and Custom novena prayers. Pick a daily time (no earlier than 6:30 AM) and either download an .ics file or add a repeating event to Google Calendar.
 
 The .ics file holds one private, 15 minute event with an on time alert for each remaining day of the novena. It opens directly in Outlook and Apple Calendar and imports into Google Calendar. Each event links to its own day in the app, for example `#novena=st-jude&day=4`, so tapping the link opens that day's meditation ready to pray. Times are written in your device's time zone. For America/Chicago the file carries a full VTIMEZONE with both the CDT and CST rules, so reminders stay at the same wall clock time across the daylight saving change; other US zones get the same rules with their own offsets, zones without daylight saving get a fixed offset, and anything else falls back to floating local times.
 
@@ -39,7 +41,7 @@ The Our Father, Hail Mary, and Glory Be are the traditional public domain texts.
 
 ## Data
 
-Everything is stored in your browser under the single localStorage key `appaday157_novena`, holding the active novena (devotion, intention, start date, nine prayed flags), the completed count, and your reminder time. Nothing leaves your device. Use Reset all data in the footer to clear it.
+Everything is stored in your browser under the single localStorage key `appaday157_novena`, holding the active novena (devotion, intention, start date, nine prayed flags), the completed count, your reminder time, and your custom prayers. Nothing leaves your device. Use Reset all data in the footer to clear it.
 
 ## Build
 

@@ -107,6 +107,25 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;padding:1rem 1rem c
 footer a,footer button.link{display:inline-flex;align-items:center;min-height:44px;padding:0 .5rem}
 button.link{background:none;border:0;color:var(--lav);text-decoration:underline;cursor:pointer;font-size:.85rem}
 .modal{position:fixed;inset:0;background:rgba(4,8,20,.72);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:20}
+#modal{z-index:30}
+.box h3{font-family:var(--serif);font-weight:normal;font-size:1.1rem;margin:1.25rem 0 .5rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--gold-soft)}
+.box h3{scroll-margin-top:1.2rem}
+.box h3:first-child{margin-top:0;padding-top:0;border-top:0}
+.plist{display:grid;gap:.5rem;margin:.5rem 0}
+.pitem{display:flex;align-items:center;gap:.4rem;background:var(--bg2);border:1px solid var(--line);border-radius:.6rem;padding:.25rem .25rem .25rem .7rem}
+.pitem div{flex:1;min-width:0}
+.pitem b{display:block;font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pitem small{color:var(--muted);font-size:.78rem}
+.mini{min-height:44px;min-width:44px;padding:0 .6rem;border-radius:.5rem;border:1px solid var(--line);background:transparent;color:var(--lav);cursor:pointer;font-size:.85rem}
+.mini:hover{background:rgba(255,255,255,.06)}
+.pform input[type=text],.pform select{width:100%;min-height:48px;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:.6rem;padding:.4rem .75rem;font:inherit;margin-bottom:.6rem}
+.pform textarea{min-height:8rem}
+.own{margin-top:1rem}
+.own details{border-color:var(--line)}
+.own details p{white-space:pre-wrap;overflow-wrap:anywhere}
+.own .daytag{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);font-weight:600;margin-left:.5rem}
+.own .btn{margin-top:.6rem}
+.empty-own{font-family:var(--serif);color:var(--muted);margin:0}
 .modal[hidden]{display:none}
 .modal .box{background:var(--card2);border:1px solid var(--line);border-radius:1rem;padding:1.2rem;width:100%;max-width:22rem;max-height:90dvh;overflow-y:auto}
 .gear{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;background:none;border:0;cursor:pointer;color:var(--lav);border-radius:.6rem}
@@ -134,7 +153,7 @@ a.btn{text-decoration:none}
   <span class="badge">157</span>
   <h1>Novena Companion</h1>
   <a class="home" href="https://augustineiacopelli.github.io/appaday/">AppADay</a>
-  <button type="button" class="gear" id="gear" aria-label="Reminders and settings">
+  <button type="button" class="gear" id="gear" aria-label="Settings, reminders, and custom prayers">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
   </button>
 </header>
@@ -163,7 +182,7 @@ a.btn{text-decoration:none}
 
 <div class="modal" id="settings" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
   <div class="box">
-    <h2 id="settings-title">Prayer reminders</h2>
+    <h2 id="settings-title">Settings</h2>
     <div id="settings-body"></div>
     <button type="button" class="btn ghost" id="settings-close">Close</button>
   </div>
@@ -372,7 +391,36 @@ function tradLine(id, today){
 }
 
 /* ---------- state ---------- */
-function emptyState(){ return { version: 1, active: null, completed: 0 }; }
+function emptyState(){ return { version: 1, active: null, completed: 0, customPrayers: [] }; }
+
+var MAX_PRAYERS = 12, MAX_PTITLE = 60, MAX_PTEXT = 2000;
+function cleanPrayers(list){
+  if (!Array.isArray(list)) return [];
+  var out = [], seen = {};
+  for (var i = 0; i < list.length && out.length < MAX_PRAYERS; i++) {
+    var p = list[i];
+    if (!p || typeof p !== "object" || typeof p.text !== "string" || !p.text.trim()) continue;
+    var day = typeof p.day === "number" && p.day >= 0 && p.day <= 9 ? Math.floor(p.day) : 0;
+    out.push({
+      id: typeof p.id === "string" && p.id && !seen[p.id] ? p.id.slice(0, 24) : "p" + i + "x" + Math.floor(Math.random() * 1e6).toString(36),
+      title: (typeof p.title === "string" ? p.title : "").slice(0, MAX_PTITLE),
+      text: p.text.slice(0, MAX_PTEXT),
+      day: day
+    });
+    seen[out[out.length - 1].id] = true;
+  }
+  return out;
+}
+function newPrayerId(){
+  var id, taken = {};
+  (state.customPrayers || []).forEach(function(p){ taken[p.id] = true; });
+  do { id = "p" + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36); } while (taken[id]);
+  return id;
+}
+function prayersForDay(d){
+  return (state.customPrayers || []).filter(function(p){ return p.day === 0 || p.day === d; });
+}
+function prayerLabel(p, i){ return p.title.trim() || "My prayer " + (i + 1); }
 
 function validActive(a){
   if (a === null) return true;
@@ -394,6 +442,7 @@ function loadState(){
         typeof s.completed !== "number" || !isFinite(s.completed) || s.completed < 0) return emptyState();
     if (s.active) s.active.intention = s.active.intention.slice(0, MAX_INTENT);
     if (typeof s.reminderTime !== "string" || !/^\d{2}:\d{2}$/.test(s.reminderTime)) delete s.reminderTime;
+    s.customPrayers = cleanPrayers(s.customPrayers);
     return s;
   } catch (e) { return emptyState(); }
 }
@@ -492,7 +541,7 @@ function closeModal(){ modal.hidden = true; pendingConfirm = null; if (lastFocus
 modalCancel.addEventListener("click", closeModal);
 modalOk.addEventListener("click", function(){ var fn = pendingConfirm; closeModal(); if (fn) fn(); });
 modal.addEventListener("click", function(e){ if (e.target === modal) closeModal(); });
-document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !modal.hidden) closeModal(); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !modal.hidden) { e.stopImmediatePropagation(); closeModal(); } });
 
 /* ---------- views ---------- */
 var views = {
@@ -542,6 +591,7 @@ function renderPicker(){
         box.hidden = false;
         startBtn.textContent = "Begin " + n.name;
         input.placeholder = id === "custom" ? "Required: what are you praying for?" : "Optional: what are you praying for?";
+        hint.hidden = id !== "custom";
         updateStart();
         box.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
@@ -559,8 +609,10 @@ function renderPicker(){
     startBtn.disabled = !selectedId || (selectedId === "custom" && !input.value.trim());
   }
   input.addEventListener("input", updateStart);
+  var hint = h("p", { cls: "note", style: "font-size:.88rem;color:var(--muted);margin:.5rem 0 0", hidden: selectedId !== "custom",
+    text: "You can add your own prayers to a custom novena at any time from the gear menu." });
   box = h("div", { cls: "startbox", hidden: !selectedId }, [
-    h("label", { "for": "intent-input", text: "Your intention" }), input, countEl, startBtn
+    h("label", { "for": "intent-input", text: "Your intention" }), input, countEl, hint, startBtn
   ]);
   v.appendChild(box);
   if (selectedId) { startBtn.textContent = "Begin " + getNovena(selectedId).name; updateStart(); }
@@ -622,6 +674,24 @@ function renderDay(vd){
   ]);
   v.appendChild(card);
 
+  if (a.novenaId === "custom") {
+    var mine = prayersForDay(vd);
+    var own = h("div", { cls: "card own" }, [h("p", { cls: "theme", text: "Your prayers" })]);
+    if (mine.length) {
+      mine.forEach(function(p){
+        var idx = state.customPrayers.indexOf(p);
+        own.appendChild(h("details", { open: true }, [
+          h("summary", null, [h("span", null, [prayerLabel(p, idx), p.day ? h("span", { cls: "daytag", text: "Day " + p.day }) : null])]),
+          h("p", { text: p.text })
+        ]));
+      });
+    } else {
+      own.appendChild(h("p", { cls: "empty-own", text: "Add your own prayers, like the prayer card you pray from, to say every day or on a single day." }));
+    }
+    own.appendChild(h("button", { type: "button", cls: "btn ghost", text: mine.length ? "Add or edit your prayers" : "Add a prayer", onclick: function(){ openSettings("prayers"); } }));
+    v.appendChild(own);
+  }
+
   var pr = h("div", { cls: "prayers" });
   ["ourFather", "hailMary", "gloryBe"].forEach(function(k){
     pr.appendChild(h("details", null, [h("summary", { text: PRAYERS[k].title }), h("p", { text: PRAYERS[k].text })]));
@@ -680,7 +750,7 @@ function beginNew(){
 }
 
 document.getElementById("reset-link").addEventListener("click", function(){
-  askConfirm("Erase all data, including your current novena and completed count?", "Erase", function(){
+  askConfirm("Erase all data, including your current novena, completed count, and custom prayers?", "Erase", function(){
     try { localStorage.removeItem(STORE_KEY); } catch (e) {}
     state = emptyState(); viewDay = null; selectedId = null; render(); window.scrollTo(0, 0);
   });
@@ -809,12 +879,84 @@ function downloadIcs(time){
 var settings = document.getElementById("settings");
 var settingsBody = document.getElementById("settings-body");
 var settingsClose = document.getElementById("settings-close");
-function openSettings(){
+function openSettings(focusSection){
+  buildSettings();
+  if (!settings.hidden) return;
+  settingsFocus = document.activeElement;
+  settings.hidden = false;
+  var target = focusSection === "prayers" ? document.getElementById("prayers-head") : null;
+  if (target && target.scrollIntoView) target.scrollIntoView({ block: "start" });
+  settingsClose.focus();
+}
+
+var editingId = null;
+function buildPrayerSection(){
+  var list = state.customPrayers;
+  settingsBody.appendChild(h("h3", { id: "prayers-head", text: "Custom novena prayers" }));
+  settingsBody.appendChild(h("p", { cls: "note", style: "margin-top:0", text: "Add your own prayers to the Custom Novena. Each one shows every day, or only on the day you choose. They stay saved for future custom novenas." }));
+  if (list.length) {
+    var ul = h("div", { cls: "plist" });
+    list.forEach(function(p, i){
+      ul.appendChild(h("div", { cls: "pitem" }, [
+        h("div", null, [h("b", { text: prayerLabel(p, i) }), h("small", { text: p.day ? "Day " + p.day + " only" : "Every day" })]),
+        h("button", { type: "button", cls: "mini", "aria-label": "Edit " + prayerLabel(p, i), text: "Edit", onclick: function(){ editingId = p.id; buildSettings(); focusForm(); } }),
+        h("button", { type: "button", cls: "mini", "aria-label": "Delete " + prayerLabel(p, i), text: "Delete", onclick: function(){
+          askConfirm("Delete \u201c" + prayerLabel(p, i) + "\u201d?", "Delete", function(){
+            state.customPrayers = state.customPrayers.filter(function(x){ return x.id !== p.id; });
+            if (editingId === p.id) editingId = null;
+            saveState(); buildSettings(); rerenderBehind();
+          });
+        } })
+      ]));
+    });
+    settingsBody.appendChild(ul);
+  }
+  var editing = null;
+  for (var k = 0; k < list.length; k++) if (list[k].id === editingId) editing = list[k];
+  if (!editing) editingId = null;
+  if (!editing && list.length >= MAX_PRAYERS) {
+    settingsBody.appendChild(h("p", { cls: "note", text: "You have reached the limit of " + MAX_PRAYERS + " prayers." }));
+    return;
+  }
+  var title = h("input", { type: "text", id: "p-title", maxlength: String(MAX_PTITLE), placeholder: "Title, such as Prayer to St. Therese", value: editing ? editing.title : "" });
+  var text = h("textarea", { id: "p-text", maxlength: String(MAX_PTEXT), placeholder: "Type or paste the prayer" });
+  text.value = editing ? editing.text : "";
+  var sel = h("select", { id: "p-day" });
+  sel.appendChild(h("option", { value: "0", text: "Every day" }));
+  for (var d = 1; d <= 9; d++) sel.appendChild(h("option", { value: String(d), text: "Day " + d + " only" }));
+  sel.value = String(editing ? editing.day : 0);
+  var count = h("div", { cls: "count", text: text.value.length + " / " + MAX_PTEXT });
+  var save = h("button", { type: "button", cls: "btn", text: editing ? "Save changes" : "Add prayer" });
+  function upd(){ count.textContent = text.value.length + " / " + MAX_PTEXT; save.disabled = !text.value.trim(); }
+  text.addEventListener("input", upd); upd();
+  save.addEventListener("click", function(){
+    var body = text.value.slice(0, MAX_PTEXT);
+    if (!body.trim()) return;
+    var rec = { id: editing ? editing.id : newPrayerId(), title: title.value.trim().slice(0, MAX_PTITLE), text: body, day: +sel.value || 0 };
+    if (editing) state.customPrayers = state.customPrayers.map(function(x){ return x.id === rec.id ? rec : x; });
+    else state.customPrayers.push(rec);
+    editingId = null;
+    saveState(); buildSettings(); rerenderBehind();
+    var head = document.getElementById("prayers-head"); if (head && head.scrollIntoView) head.scrollIntoView({ block: "start" });
+  });
+  var form = h("div", { cls: "pform" }, [
+    h("label", { "for": "p-title", text: editing ? "Edit prayer" : "New prayer" }), title,
+    h("label", { "for": "p-text", text: "Prayer text" }), text, count,
+    h("label", { "for": "p-day", style: "margin-top:.5rem", text: "Pray it on" }), sel, save,
+    editing ? h("button", { type: "button", cls: "btn ghost", text: "Cancel edit", onclick: function(){ editingId = null; buildSettings(); } }) : null
+  ]);
+  settingsBody.appendChild(form);
+}
+function focusForm(){ var t = document.getElementById("p-title"); if (t) { if (t.scrollIntoView) t.scrollIntoView({ block: "center" }); t.focus(); } }
+function rerenderBehind(){ if (state.active && views.day && !views.day.hidden) renderDay(viewDay || dayNumber(state, todayStr())); }
+
+function buildSettings(){
   clear(settingsBody);
   var a = state.active;
   var dn = a ? dayNumber(state, todayStr()) : 0;
+  settingsBody.appendChild(h("h3", { text: "Calendar reminders" }));
   if (!a || a.done || dn > 9) {
-    settingsBody.appendChild(h("p", { cls: "note", text: "Begin a novena first, then come back here to add its nine days to your calendar." }));
+    settingsBody.appendChild(h("p", { cls: "note", style: "margin-top:0", text: "Begin a novena first, then come back here to add its nine days to your calendar." }));
   } else {
     var n = getNovena(a.novenaId), days = reminderDays();
     var time = h("input", { type: "time", id: "rem-time", min: MIN_TIME, step: "300", value: state.reminderTime || DEFAULT_TIME });
@@ -831,15 +973,14 @@ function openSettings(){
     settingsBody.appendChild(gLink);
     settingsBody.appendChild(h("p", { cls: "note", text: "Google's quick add makes one repeating event that opens your current day." + (userTz() ? " Times are in " + userTz() + "." : "") }));
   }
-  lastFocus = document.activeElement;
-  settings.hidden = false;
-  settingsClose.focus();
+  buildPrayerSection();
 }
-function closeSettings(){ settings.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
-document.getElementById("gear").addEventListener("click", openSettings);
+var settingsFocus = null;
+function closeSettings(){ settings.hidden = true; editingId = null; if (settingsFocus && settingsFocus.focus && document.body.contains(settingsFocus)) settingsFocus.focus(); }
+document.getElementById("gear").addEventListener("click", function(){ editingId = null; openSettings(); });
 settingsClose.addEventListener("click", closeSettings);
 settings.addEventListener("click", function(e){ if (e.target === settings) closeSettings(); });
-document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !settings.hidden) closeSettings(); });
+document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !settings.hidden && modal.hidden) closeSettings(); });
 
 /* ---------- deep links: #novena=<id>&day=<n> ---------- */
 function applyHash(){
