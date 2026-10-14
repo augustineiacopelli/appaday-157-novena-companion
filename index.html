@@ -119,7 +119,8 @@ button.link{background:none;border:0;color:var(--lav);text-decoration:underline;
 .mini{min-height:44px;min-width:44px;padding:0 .6rem;border-radius:.5rem;border:1px solid var(--line);background:transparent;color:var(--lav);cursor:pointer;font-size:.85rem}
 .mini:hover{background:rgba(255,255,255,.06)}
 .pform input[type=text],.pform select{width:100%;min-height:48px;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:.6rem;padding:.4rem .75rem;font:inherit;margin-bottom:.6rem}
-.pform textarea{min-height:8rem}
+.pform textarea{min-height:8rem;margin-bottom:.25rem}
+.pform[hidden]{display:none}
 .own{margin-top:1rem}
 .own details{border-color:var(--line)}
 .own details p{white-space:pre-wrap;overflow-wrap:anywhere}
@@ -609,8 +610,16 @@ function renderPicker(){
     startBtn.disabled = !selectedId || (selectedId === "custom" && !input.value.trim());
   }
   input.addEventListener("input", updateStart);
-  var hint = h("p", { cls: "note", style: "font-size:.88rem;color:var(--muted);margin:.5rem 0 0", hidden: selectedId !== "custom",
-    text: "You can add your own prayers to a custom novena at any time from the gear menu." });
+  var saved = state.customPrayers.length;
+  var prayTitle = h("input", { type: "text", id: "start-ptitle", maxlength: String(MAX_PTITLE), placeholder: "Title (optional)" });
+  var prayText = h("textarea", { id: "start-ptext", maxlength: String(MAX_PTEXT), rows: "6", placeholder: "Type or paste the prayer you will pray each day of this novena" });
+  var hint = h("div", { cls: "pform", style: "margin-top:1rem", hidden: selectedId !== "custom" }, [
+    h("label", { "for": "start-ptext", text: saved ? "Add another prayer (optional)" : "Your novena prayer (optional)" }),
+    prayTitle, prayText,
+    h("p", { cls: "note", style: "font-size:.88rem;color:var(--muted);margin:.25rem 0 0",
+      text: (saved ? "Your " + saved + " saved prayer" + (saved === 1 ? " is" : "s are") + " already included. " : "") +
+        "It will appear every day under the meditation. Add more, edit, or set a prayer for one day only from the gear menu." })
+  ]);
   box = h("div", { cls: "startbox", hidden: !selectedId }, [
     h("label", { "for": "intent-input", text: "Your intention" }), input, countEl, hint, startBtn
   ]);
@@ -621,6 +630,9 @@ function renderPicker(){
     if (!selectedId) return;
     var text = input.value.trim().slice(0, MAX_INTENT);
     if (selectedId === "custom" && !text) return;
+    if (selectedId === "custom" && prayText.value.trim() && state.customPrayers.length < MAX_PRAYERS) {
+      state.customPrayers.push({ id: newPrayerId(), title: prayTitle.value.trim().slice(0, MAX_PTITLE), text: prayText.value.slice(0, MAX_PTEXT), day: 0 });
+    }
     state.active = { novenaId: selectedId, intention: text, startDate: todayStr(), checked: [false,false,false,false,false,false,false,false,false] };
     selectedId = null; viewDay = null;
     saveState(); render(); window.scrollTo(0, 0);

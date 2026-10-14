@@ -13,7 +13,7 @@ Seven built in novenas are included: the Holy Spirit (the seven gifts), Divine M
 
 A Custom Novena follows a nine day arc of Trust, Surrender, Patience, Humility, Perseverance, Hope, Charity, Peace, and Gratitude, with your intention woven into each day's meditation. An intention is required for the custom novena and optional for the others, and is limited to 140 characters.
 
-The Custom Novena can also carry your own prayers, such as the text of a prayer card or a parish novena booklet. Add them from the gear menu or from the Your prayers card on any custom novena day. Each prayer has an optional title, up to 2,000 characters of text with line breaks kept, and a schedule of every day or a single day from 1 to 9. Prayers appear open beneath that day's meditation, can be edited or deleted at any time (deleting asks first), and stay saved for future custom novenas. Up to 12 prayers can be kept.
+The Custom Novena can also carry your own prayers, such as the text of a prayer card or a parish novena booklet. When you choose Custom Novena, the start box has a field right under your intention to type or paste the prayer you will pray each day. Add more prayers, or a prayer for one day only, from the gear menu or from the Your prayers card on any custom novena day. Each prayer has an optional title, up to 2,000 characters of text with line breaks kept, and a schedule of every day or a single day from 1 to 9. Prayers appear open beneath that day's meditation, can be edited or deleted at any time (deleting asks first), and stay saved for future custom novenas. Up to 12 prayers can be kept.
 
 ## How it works
 
