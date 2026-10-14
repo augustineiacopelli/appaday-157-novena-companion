@@ -219,7 +219,7 @@ var NOVENAS = {
       D("Fear of the Lord", "Holy fear is not terror but awe, the reverence of one who knows how great God is. It keeps me from treating sin lightly and grace casually. Holy Spirit, fill me with wonder before the majesty of God."),
       D("The Fruits of the Spirit", "Where the Spirit lives, love, joy, peace, patience, kindness, and gentleness begin to grow. These are the signs that the gifts have taken root. Holy Spirit, let Your fruit ripen in me so that others may taste Your goodness.")
     ],
-    closing: "Holy Spirit, Lord and giver of life, I place this novena and my intention in Your hands. Pour out Your seven gifts on me and on all who seek You, renew the face of the earth, and lead me always to the Father through Jesus Christ our Lord. Amen."
+    closing: "Holy Spirit, Lord and giver of life, I place this day of prayer and my intention in Your hands. Pour out Your seven gifts on me and on all who seek You, renew the face of the earth, and lead me always to the Father through Jesus Christ our Lord. Amen."
   },
   "divine-mercy": {
     name: "Divine Mercy Novena",
@@ -235,7 +235,7 @@ var NOVENAS = {
       D("The Souls in Purgatory", "I remember those who have died and are being made ready for heaven. My prayers can still reach them and hasten their joy. Merciful Jesus, grant them rest and bring them home to You."),
       D("The Lukewarm", "Lukewarm hearts are not cold, but they are not on fire either, and sometimes that heart is mine. Mercy can rekindle even a faint ember. Jesus, set every lukewarm soul ablaze with love for You.")
     ],
-    closing: "Eternal Father, look with mercy on all those I have carried in prayer these nine days. For the sake of the sorrowful Passion of Your Son, have mercy on us and on the whole world. Jesus, I trust in You. Amen."
+    closing: "Eternal Father, look with mercy on all those I carry in prayer today. For the sake of the sorrowful Passion of Your Son, have mercy on us and on the whole world. Jesus, I trust in You. Amen."
   },
   "st-jude": {
     name: "Novena to St. Jude",
@@ -333,8 +333,13 @@ var CUSTOM = {
     D("Peace", "I let go of anxiety about {intention} and rest in the presence of God. His peace is not the absence of trouble but the nearness of Christ. Lord, grant me Your peace."),
     D("Gratitude", "On this final day I thank God for hearing my prayer for {intention}. Every answer, even a hidden one, is a gift. Lord, I give You thanks for all Your goodness.")
   ],
-  closing: "Heavenly Father, I have prayed these nine days for my intention. I trust that You have heard me and that You will answer in the way that is best for my salvation. Through Jesus Christ our Lord, in the unity of the Holy Spirit. Amen."
+  closing: "Heavenly Father, I offer You this day of my novena and my intention. I trust that You hear me and that You will answer in the way that is best for my salvation. Through Jesus Christ our Lord, in the unity of the Holy Spirit. Amen."
 };
+
+var FINAL_LINE = "Lord, on this final day of my novena, I give thanks for every grace of these nine days, and I leave my intention in Your hands, trusting in Your perfect will. Amen.";
+function closingFor(n, d){
+  return d === 9 ? n.closing.replace(/ Amen\.$/, "") + " " + FINAL_LINE : n.closing;
+}
 
 var ORDER = ["holy-spirit","divine-mercy","st-jude","st-joseph","perpetual-help","miraculous-medal","immaculate-conception"];
 
@@ -710,7 +715,7 @@ function renderDay(vd){
   });
   v.appendChild(pr);
 
-  v.appendChild(h("div", { cls: "card closing" }, [h("h4", { text: "Closing prayer" }), h("p", { text: n.closing })]));
+  v.appendChild(h("div", { cls: "card closing" }, [h("h4", { text: vd === 9 ? "Closing prayer for the final day" : "Closing prayer" }), h("p", { text: closingFor(n, vd) })]));
 
   var on = a.checked[vd - 1];
   v.appendChild(h("button", {
@@ -747,7 +752,7 @@ function renderComplete(){
     a.intention ? h("p", { cls: "intent", text: "For " + a.intention }) : null,
     h("p", { text: full ? "All nine days prayed. Thanks be to God." : prayed + " of 9 days prayed. God sees every prayer offered." }),
     h("p", { text: "Novenas completed: " + state.completed }),
-    h("div", { cls: "card closing", style: "text-align:left;margin-top:1rem" }, [h("h4", { text: "Closing prayer" }), h("p", { text: n.closing })]),
+    h("div", { cls: "card closing", style: "text-align:left;margin-top:1rem" }, [h("h4", { text: "Closing prayer for the final day" }), h("p", { text: closingFor(n, 9) })]),
     h("button", { type: "button", cls: "btn gold", text: "Begin a new novena", onclick: beginNew })
   ]));
   show("complete");

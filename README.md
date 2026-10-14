@@ -9,7 +9,7 @@ Novena Companion walks you through a nine day Catholic novena. Pick a devotion, 
 
 ## The novenas
 
-Seven built in novenas are included: the Holy Spirit (the seven gifts), Divine Mercy (a different group of souls each day), St. Jude, St. Joseph, Our Mother of Perpetual Help, the Miraculous Medal, and the Immaculate Conception. Each has nine themed days and its own closing prayer.
+Seven built in novenas are included: the Holy Spirit (the seven gifts), Divine Mercy (a different group of souls each day), St. Jude, St. Joseph, Our Mother of Perpetual Help, the Miraculous Medal, and the Immaculate Conception. Each has nine themed days and its own closing prayer, worded to be prayed on any day; on Day 9 it gains a concluding line that gives thanks for the nine days and entrusts the intention to God.
 
 A Custom Novena follows a nine day arc of Trust, Surrender, Patience, Humility, Perseverance, Hope, Charity, Peace, and Gratitude, with your intention woven into each day's meditation. An intention is required for the custom novena and optional for the others, and is limited to 140 characters.
 
